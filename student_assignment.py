@@ -50,15 +50,6 @@ def generate_hw01():
                 print(f'Add {row["Name"]}. Collection count = {collection.count()}')
     return collection
 
-def filter_score(results, score):
-    distance = 1.0 - score
-    results = sorted([
-        (dist, metadata)
-        for dist, metadata in zip(results['distances'][0], results['metadatas'][0])
-        if dist <= 0.2
-    ], key=lambda item: item[0])
-    return [result[1].get('new_store_name', result[1]['name']) for result in results]
-
 def generate_hw02(question, city, store_type, start_date, end_date):
     results = generate_hw01().query(
         query_texts=[question],
@@ -124,6 +115,6 @@ def demo(question):
     
     return collection
 
-print(generate_hw01().count())
-print(generate_hw02("我想要找有關茶餐點的店家", ["宜蘭縣", "新北市"], ["美食"], datetime.datetime(2024, 4, 1), datetime.datetime(2024, 5, 1)))
-print(generate_hw03("我想要找南投縣的田媽媽餐廳，招牌是蕎麥麵", "耄饕客棧", "田媽媽（耄饕客棧）", ["南投縣"], ["美食"]))
+# print(generate_hw01().count())
+# print(generate_hw02("我想要找有關茶餐點的店家", ["宜蘭縣", "新北市"], ["美食"], datetime.datetime(2024, 4, 1), datetime.datetime(2024, 5, 1)))
+# print(generate_hw03("我想要找南投縣的田媽媽餐廳，招牌是蕎麥麵", "耄饕客棧", "田媽媽（耄饕客棧）", ["南投縣"], ["美食"]))
