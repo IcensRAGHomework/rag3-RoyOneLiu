@@ -28,27 +28,30 @@ def generate_hw01():
             deployment_id = gpt_emb_config['deployment_name']
         )
     )
-    data_csv = pd.read_csv(csv_file)
-    if collection.count() != data_csv.shape[0]:
-        for _, row in data_csv.iterrows():
-            result = collection.get(ids=[row['ID']])
-            if not result or not result['ids']:
-                collection.add(
-                    documents=[row['HostWords']],
-                    metadatas=[{
-                        'file_name':csv_file,
-                        'name':row['Name'],
-                        'type':row['Type'],
-                        'address':row['Address'],
-                        'tel':row['Tel'],
-                        'city':row['City'],
-                        'town':row['Town'],
-                        'date':int(datetime.datetime.strptime(row['CreateDate'], '%Y-%m-%d').timestamp())
-                    }],
-                    ids=[row['ID']]
-                )
-                print(f'Add {row["Name"]}. Collection count = {collection.count()}')
-    return collection
+    try:
+        data_csv = pd.read_csv(csv_file)
+        if collection.count() != data_csv.shape[0]:
+            for _, row in data_csv.iterrows():
+                result = collection.get(ids=[row['ID']])
+                if not result or not result['ids']:
+                    collection.add(
+                        documents=[row['HostWords']],
+                        metadatas=[{
+                            'file_name':csv_file,
+                            'name':row['Name'],
+                            'type':row['Type'],
+                            'address':row['Address'],
+                            'tel':row['Tel'],
+                            'city':row['City'],
+                            'town':row['Town'],
+                            'date':int(datetime.datetime.strptime(row['CreateDate'], '%Y-%m-%d').timestamp())
+                        }],
+                        ids=[row['ID']]
+                    )
+                    print(f'Add {row["Name"]}. Collection count = {collection.count()}')
+        return collection
+    except:
+        return collection
 
 def generate_hw02(question, city, store_type, start_date, end_date):
     and_condition = []
