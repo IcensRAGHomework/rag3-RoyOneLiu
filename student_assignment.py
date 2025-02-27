@@ -19,7 +19,7 @@ def generate_hw01():
     chroma_client = chromadb.PersistentClient(path=dbpath)
     collection = chroma_client.get_or_create_collection(
         name="TRAVEL",
-        metadata={"hnsw:space": "cosine", "hnsw:batch_size": 200},
+        metadata={"hnsw:space": "cosine"},
         embedding_function=embedding_functions.OpenAIEmbeddingFunction(
             api_key = gpt_emb_config['api_key'],
             api_base = gpt_emb_config['api_base'],
@@ -31,8 +31,8 @@ def generate_hw01():
     data_csv = pd.read_csv(csv_file)
     if collection.count() != data_csv.shape[0]:
         for _, row in data_csv.iterrows():
-            result = collection.get(ids=[str(row["ID"])])
-            if not result or not result["ids"]:
+            result = collection.get(ids=[row['ID']])
+            if not result or not result['ids']:
                 collection.add(
                     documents=[row['HostWords']],
                     metadatas=[{
@@ -45,7 +45,7 @@ def generate_hw01():
                         'town':row['Town'],
                         'date':int(datetime.datetime.strptime(row['CreateDate'], '%Y-%m-%d').timestamp())
                     }],
-                    ids=[str(row["ID"])]
+                    ids=[row['ID']]
                 )
                 print(f'Add {row["Name"]}. Collection count = {collection.count()}')
     return collection
