@@ -51,17 +51,19 @@ def generate_hw01():
     return collection
 
 def generate_hw02(question, city, store_type, start_date, end_date):
+    and_condition = []
+    if city and len(city) > 0:
+        and_condition.append({'city': {'$in': city}})
+    if store_type and len(store_type) > 0:
+        and_condition.append({'type': {'$in': store_type}})
+    if start_date:
+        and_condition.append({'date': {'$gte': int(start_date.timestamp())}})
+    if end_date:
+        and_condition.append({'date': {'$lte': int(end_date.timestamp())}})
     results = generate_hw01().query(
         query_texts=[question],
         n_results=10,
-        where={
-            '$and': [
-                {'city': {'$in': city}},
-                {'type': {'$in': store_type}},
-                {'date': {'$gte': int(start_date.timestamp())}}, 
-                {'date': {'$lte': int(end_date.timestamp())}}
-            ]
-        }
+        where={'$and': and_condition}
     )
     return [item[1]['name'] for item in sorted([
         (dist, metadata)
@@ -71,6 +73,7 @@ def generate_hw02(question, city, store_type, start_date, end_date):
 
 def generate_hw03(question, store_name, new_store_name, city, store_type):
     collection = generate_hw01()
+    # Update
     results = collection.query(
         query_texts=[store_name],
         where={'name': {'$eq': store_name}}
@@ -82,15 +85,16 @@ def generate_hw03(question, store_name, new_store_name, city, store_type):
             for metadata in results['metadatas'][0]
         ]
     )
+    # Query
+    and_condition = []
+    if city and len(city) > 0:
+        and_condition.append({'city': {'$in': city}})
+    if store_type and len(store_type) > 0:
+        and_condition.append({'type': {'$in': store_type}})
     results = collection.query(
         query_texts=[question],
         n_results=10,
-        where={
-            '$and': [
-                {'city': {'$in': city}},
-                {'type': {'$in': store_type}}
-            ]
-        }
+        where={'$and': and_condition}
     )
     return [item[1].get('new_store_name', item[1]['name']) for item in sorted([
         (dist, metadata)
@@ -115,6 +119,18 @@ def demo(question):
     
     return collection
 
-# print(generate_hw01().count())
-# print(generate_hw02("我想要找有關茶餐點的店家", ["宜蘭縣", "新北市"], ["美食"], datetime.datetime(2024, 4, 1), datetime.datetime(2024, 5, 1)))
-# print(generate_hw03("我想要找南投縣的田媽媽餐廳，招牌是蕎麥麵", "耄饕客棧", "田媽媽（耄饕客棧）", ["南投縣"], ["美食"]))
+# print(type(collenction:=generate_hw01()), collenction.count(), collenction.name, collenction.metadata)
+# print(generate_hw02(
+#     "我想要找有關茶餐點的店家",
+#     ["宜蘭縣", "新北市"],
+#     ["美食"],
+#     datetime.datetime(2024, 4, 1),
+#     datetime.datetime(2024, 5, 1)
+# ))
+# print(generate_hw03(
+#     "我想要找南投縣的田媽媽餐廳，招牌是蕎麥麵",
+#     "耄饕客棧",
+#     "田媽媽（耄饕客棧）",
+#     ["南投縣"],
+#     ["美食"]
+# ))
